@@ -12,6 +12,7 @@
 | 2019-04-15 | v3.1.0 Release | Weijian Lin | Add post data process |
 | 2019-05-20 | v3.1.1 Release | Weijian Lin | Add incremental point cloud handle |
 | 2020-09-29 | v3.2 Beta | Rui Jia | Modified for SE/SP |
+| 2022-01-17 | v3.4 | Rui Jia | Add global registertion |
 
 [TOC]
 
@@ -41,7 +42,7 @@ Currently there are only two parameters in platform.ini in version v1.0:
 
 Normally you only need to change the ports if you want.
 
-Double click Sn3DPlatform.exe and then the SDK is ready to talk to you via ZMQ interfaces.
+Firstly，Double click ScanService.exe which in the same directory of EXScan S .exe. After that, Double click Sn3DPlatform.exe and then the SDK is ready to talk to you via ZMQ interfaces.
 
 ## Interfaces
 
@@ -52,7 +53,7 @@ Each message between Sn3DPlatform.exe and your app consists of two frames:
   - Commands: the actual commands of this message. The commands may have several parts, who are joined by character `/`.
 - Payload: A byte array with a maximum length of 1024. It could be an integer, a string, or a JSON object, depending on the certain command.
 
-The heartbeat message is a special message publishing from the SDK. It has only the evelop. Third party app should pay attention if they receive a message with such envelop.
+The heartbeat message is a special message publishing from the SDK. It has only the envelop. Third party app should pay attention if they receive a message with such envelop.
 
 There are three types of interfaces:
 
@@ -654,6 +655,8 @@ The JSON definition is:
         "alignType": "AT_FEATURES",     // The alignment type
         "subScanType": "SST_FIXED_FREE",// Sub scan type
         "turntableTimes": 10            // The turn times in fix mode
+        "turntableSpeeds": 10          // The turn speed in fix mode
+        "turntableNum": 1            // 1:turn a circle, 0.5:turn a half circle
     }
 }
 ```
@@ -705,6 +708,20 @@ The JSON definition is:
 ```
 
 Asynchronous signals will be emitted. The async action type is `"AAT_SCAN"`.
+
+Both the beginning and finishing `props`'s are empty, and there is no `progress` signal.
+
+### Global Registertion
+
+Ask the SDK to globalRegistertion.
+
+| Type    | Envelop                      | Payload                 |
+| ------- | ---------------------------- | ----------------------- |
+| Request | v1.0/scan/globalRegistertion | REQ: None REP: Int Bool |
+
+The reply of request set denotes whether the action is successful.
+
+Asynchronous signals will be emitted. The async action type is `"AAT_ENDSCANFIXED"`.
 
 Both the beginning and finishing `props`'s are empty, and there is no `progress` signal.
 
